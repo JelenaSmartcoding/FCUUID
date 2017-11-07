@@ -7,7 +7,7 @@
 
 #import "FCUUID.h"
 #import "UICKeyChainStore.h"
-
+#import <AdSupport/ASIdentifierManager.h>
 
 @implementation FCUUID
 
@@ -169,9 +169,15 @@ NSString *const _uuidsOfUserDevicesToggleKey = @"fc_uuidsOfUserDevicesToggle";
 -(NSString *)uuidForDevice
 {
     //also known as udid/uniqueDeviceIdentifier but this doesn't persists to system reset
-
+	
+	NSString *def = nil;
+	
+	if (![[[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString] isEqualToString: @"00000000-0000-0000-0000-000000000000"]) {
+		def = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+	}
+	
     if( _uuidForDevice == nil ){
-        _uuidForDevice = [self _getOrCreateValueForKey:_uuidForDeviceKey defaultValue:nil userDefaults:YES keychain:YES service:nil accessGroup:nil synchronizable:NO];
+        _uuidForDevice = [self _getOrCreateValueForKey:_uuidForDeviceKey defaultValue:def userDefaults:YES keychain:YES service:nil accessGroup:nil synchronizable:NO];
     }
 
     return _uuidForDevice;
